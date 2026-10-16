@@ -1,34 +1,127 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>Add Student</title>
+    <title>Add Student</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <h1>Add Student</h1>
-    <form action="/students/add" method="POST">
+
+    <form action="/students/add" method="POST" id="addStudentForm" novalidate>
+
         <label>Student ID:</label><br>
-            <input type="text" name="student_id" required><br><br>
-            <label>First Name:</label><br>
+        <input
+            type="text"
+            name="student_id"
+            id="student_id"
+            required
+        >
+        <small id="studentIdError" style="color: red; display: none;">
+            Missing student ID. Please enter your student ID.
+        </small>
+        <br><br>
 
-            <input type="text" name="first_name" required><br><br>
-            <label>Last Name:</label><br>
+        <label>First Name:</label><br>
+        <input type="text" name="first_name" required><br><br>
 
-            <input type="text" name="last_name" required><br><br>
-            <label>Course:</label><br>
+        <label>Last Name:</label><br>
+        <input type="text" name="last_name" required><br><br>
 
-            <input type="text" name="course" required><br><br>
-            <label>Year Level:</label><br>
+        <label>Course:</label><br>
+        <input type="text" name="course" required><br><br>
 
-            <input type="number" name="year_level" min="1" max="5" required><br><br>
-            <label>Email:</label><br>
+        <label>Year Level:</label><br>
+        <input type="number" name="year_level" min="1" max="5" required><br><br>
 
-            <input type="email" name="email" required><br><br>
-            
-            <button type="submit">Save Student</button>
-        </form>
-        <br>
-        <a href="/">Back to Student List</a>
+        <label>Email:</label><br>
+        <input
+            type="email"
+            name="email"
+            id="email"
+            required
+        >
+        <small id="emailError" style="color: red; display: none;">
+            Invalid email. Please enter a valid email address.
+        </small>
+        <br><br>
 
+        <button type="submit">Save Student</button>
+    </form>
 
+    <br>
+    <a href="/">Back to Student List</a>
+
+    <script>
+        const form = document.getElementById('addStudentForm');
+
+        const studentId = document.getElementById('student_id');
+        const studentIdError = document.getElementById('studentIdError');
+
+        const email = document.getElementById('email');
+        const emailError = document.getElementById('emailError');
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Student ID validation
+        studentId.addEventListener('input', function () {
+            if (studentId.value.trim() === '') {
+                studentIdError.style.display = 'block';
+            } else {
+                studentIdError.style.display = 'none';
+            }
+        });
+
+        // Email validation
+        email.addEventListener('input', function () {
+            if (email.value.trim() !== '' &&
+                !emailPattern.test(email.value.trim())) {
+                emailError.style.display = 'block';
+            } else {
+                emailError.style.display = 'none';
+            }
+        });
+
+        // Validate before submitting
+        form.addEventListener('submit', function (event) {
+            let isValid = true;
+
+            if (studentId.value.trim() === '') {
+                studentIdError.style.display = 'block';
+                studentId.focus();
+                isValid = false;
+            } else {
+                studentIdError.style.display = 'none';
+            }
+
+            if (!emailPattern.test(email.value.trim())) {
+                emailError.style.display = 'block';
+
+                if (isValid) {
+                    email.focus();
+                }
+
+                isValid = false;
+            } else {
+                emailError.style.display = 'none';
+            }
+
+            // Check other required fields
+            const requiredFields = form.querySelectorAll(
+                'input[required]:not(#student_id):not(#email)'
+            );
+
+            requiredFields.forEach(function (field) {
+                if (field.value.trim() === '') {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
